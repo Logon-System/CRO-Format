@@ -271,7 +271,6 @@ Le sous-chunk `RDT ` contient le contenu brut de la ROM. Sa taille doit correspo
 
 Les données binaires correspondent au contenu brut de la ROM.
 
-* Aucune hypothèse n’est faite sur leur organisation interne.
 * La taille est donnée explicitement par le champ `Taille`.
 
 ---
