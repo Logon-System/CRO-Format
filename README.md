@@ -145,6 +145,7 @@ Valeurs définies :
 * `0x00000000` : ROM_LOW
 * `0x00000001` : ROM_HIGH
 * `0x00000002` : ROM_BANKABLE
+* `0x00000003` : ROM_MF2
 
 #### `RLOG` – Numéro logique
 
