@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>CRO Editor Stable</title>
+<title>CRO MANAGER</title>
 <style>
 body { font-family: sans-serif; margin: 20px; }
 h1,h2 { margin-top: 1em; }
@@ -45,8 +45,8 @@ h1,h2 { margin-top: 1em; }
 }
 
 .rom-type { min-width: 120px; }
-.rom-log  { min-width: 60px; }   /* réduit pour ne plus chevaucher */
-.rom-phy  { min-width: 60px; }   /* réduit pour ne plus chevaucher */
+.rom-log  { min-width: 60px; }
+.rom-phy  { min-width: 60px; }
 
 .rom-size { 
   font-size: 0.9em; 
@@ -57,17 +57,18 @@ h1,h2 { margin-top: 1em; }
 .ROM_LOW { background: #ffcccc; }
 .ROM_HIGH { background: #cce5ff; }
 .ROM_BANKABLE { background: #ccffcc; }
+.ROM_MF2 { background: #ffcc99; }
 
 button.danger { color: darkred; }
 </style>
 </head>
 <body>
 
-<h1>CRO Editor Stable</h1>
+<h1>CRO MANAGER</h1>
 
 <div id="dropImport" class="dropzone">Déposez ici un fichier CPR / XPR / CRO</div>
 <button onclick="addGroup()">Ajouter un GRRO</button>
-<input id="exportName" type="text" value="ExportCRO" style="margin-left: 10px; width: 200px;">
+<input id="exportName" type="text" value="" style="margin-left: 10px; width: 200px;">
 <button id="exportBtn" onclick="exportCRO()" disabled>Exporter .CRO</button>
 
 <h2>Groupes</h2>
@@ -80,6 +81,11 @@ button.danger { color: darkred; }
 let groups = [];
 let selectedGroupIndex = null;
 const exportNameInput = document.getElementById("exportName");
+
+/* ==================== Initialisation ==================== */
+window.onload = () => {
+  exportNameInput.value = "ExportCRO";  // réinitialisation au démarrage
+};
 
 /* ==================== UI ==================== */
 function renderGroups() {
@@ -119,7 +125,11 @@ function renderGroups() {
 
     g.roms.forEach((r, ri) => {
       const rd = document.createElement("div");
-      rd.className = "rom " + (r.rtyp===0?"ROM_LOW":r.rtyp===1?"ROM_HIGH":"ROM_BANKABLE");
+      const cls = r.rtyp===0?"ROM_LOW":
+                  r.rtyp===1?"ROM_HIGH":
+                  r.rtyp===2?"ROM_BANKABLE":
+                  "ROM_MF2";
+      rd.className = "rom " + cls;
 
       const nameDiv = document.createElement("div");
       nameDiv.className = "rom-name";
@@ -133,12 +143,17 @@ function renderGroups() {
           <option value="0">LOW</option>
           <option value="1">HIGH</option>
           <option value="2">BANKABLE</option>
+          <option value="3">MF2</option>
         </select>`;
       const typeSelect = typeDiv.querySelector("select");
       typeSelect.value = r.rtyp;
       typeSelect.addEventListener("change", () => {
         r.rtyp = parseInt(typeSelect.value);
-        rd.className = "rom " + (r.rtyp===0?"ROM_LOW":r.rtyp===1?"ROM_HIGH":"ROM_BANKABLE");
+        const cls = r.rtyp===0?"ROM_LOW":
+                    r.rtyp===1?"ROM_HIGH":
+                    r.rtyp===2?"ROM_BANKABLE":
+                    "ROM_MF2";
+        rd.className = "rom " + cls;
       });
       rd.appendChild(typeDiv);
 
@@ -208,7 +223,7 @@ dropROM.ondrop = e => {
     fr.onload = () => {
       groups[selectedGroupIndex].roms.push({
         rid: f.name,
-        rtyp: 1,
+        rtyp: 1, // HIGH par défaut
         rlog: 1,
         rphy: 0,
         rdt: new Uint8Array(fr.result)
@@ -232,7 +247,6 @@ dropImport.ondrop = e => {
       const arr = new Uint8Array(fr.result);
       const sig = String.fromCharCode(...arr.slice(8,12));
 
-      // Mettre le nom d'export
       exportNameInput.value = f.name.replace(/\.[^.]+$/,"");
 
       if(sig==='AMS!'){ // CPR
@@ -240,8 +254,8 @@ dropImport.ondrop = e => {
         addGroup(gname);
         const g = groups[selectedGroupIndex];
         for(let i=0;i<32;i++){
-          const rtyp = i<8?2:1; // BANKABLE si <8, HIGH sinon
-          const rlog = i===3?7:1; // AMSDOS
+          const rtyp = i<8?2:1; 
+          const rlog = i===3?7:1; 
           const rphy = i;
           const chunkName = 'cb'+String(i).padStart(2,'0');
           const idx = textIndexOfChunk(arr, chunkName);
@@ -309,11 +323,11 @@ function exportCRO(){
     const startLen = arr.length;
     writeUInt32LE(0);
 
-    writeStr("GNAM"); for(let c of g.glbl) arr.push(c.charCodeAt(0));
+    writeStr("GLBL"); for(let c of g.glbl) arr.push(c.charCodeAt(0));
     writeStr("GNUM"); writeUInt32LE(g.gnum);
 
     g.roms.forEach(r=>{
-      writeStr("RROM");
+      writeStr("ROM ");
       const rstart = arr.length;
       writeUInt32LE(0);
       writeStr("RID "); for(let c of r.rid) arr.push(c.charCodeAt(0));
