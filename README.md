@@ -1,5 +1,7 @@
 # CRO Format – Containers ROms for Amstrad CPC
 
+![Image Presentation CRO format](./images/logocro.png)
+
 This document describes the **CRO** (*Containers ROms*) format, designed to group and describe ROMs for **Amstrad CPC** computers, all generations.
 
 CRO is based on the **Resource Interchange File Format (RIFF)** using chunks to organize data.
@@ -173,5 +175,6 @@ RIFF allows:
 * unrecognized chunks to be ignored
 
 CRO is durable, extensible, and compatible with all CPC architectures.
+
 
 
