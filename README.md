@@ -67,13 +67,19 @@ Il décrit une organisation hiérarchique de ROMs destinée aux systèmes CPC.
 La structure logique d’un fichier CRO est la suivante :
 
 ```
-RIFF "CRO "
- ├── GRRO (groupe de ROMs)
- │    ├── Descripteurs du groupe
- │    └── ROM (une ou plusieurs)
- │         ├── Descripteurs de la ROM
- │         └── Données binaires
- └── GRRO …
+RIFF
+ └─ CRO␠
+     ├─ GRRO
+     │   ├─ GLBL
+     │   ├─ GNUM
+     │   ├─ ROM␠
+     │   │   ├─ RID␠
+     │   │   ├─ RTYP
+     │   │   ├─ RLOG
+     │   │   ├─ RPHY
+     │   │   └─ RDT␠
+     │   └─ ...
+     └─ ...
 ```
 
 Un fichier CRO contient un ou plusieurs **GRRO**, chacun regroupant un ensemble cohérent de ROMs.
