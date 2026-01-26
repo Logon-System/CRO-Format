@@ -1,5 +1,5 @@
 # Format CRO – Conteneur de ROMs pour Amstrad CPC
-
+![Image Presentation CRO format](./images/logocro.png)
 Ce document décrit le format **CRO** (*Conteneur de ROms*), un format destiné à regrouper et décrire les ROMs pour les ordinateurs **Amstrad CPC**, toutes générations confondues.
 
 Le format CRO repose sur le **Resource Interchange File Format (RIFF)** et utilise sa structure par chunks pour organiser les données.
