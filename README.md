@@ -61,7 +61,7 @@ RIFF
      +- GRRO
      ¦   +- GLBL
      ¦   +- GNUM
-     ¦   +- ROM?
+     ¦   +- ROM
      ¦   ¦   +- RID
      ¦   ¦   +- RTYP
      ¦   ¦   +- RLOG
@@ -173,4 +173,5 @@ RIFF allows:
 * unrecognized chunks to be ignored
 
 CRO is durable, extensible, and compatible with all CPC architectures.
+
 
