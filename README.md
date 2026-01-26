@@ -1,52 +1,52 @@
-# Format CRO – Containers ROms pour Amstrad CPC
+# Format CRO – Conteneur de ROMs pour Amstrad CPC
 
-Ce document décrit le format **CRO** (*Containers ROms*), un format de conteneur destiné à regrouper et décrire des ROMs pour les ordinateurs **Amstrad CPC**, toutes générations confondues.
+Ce document décrit le format **CRO** (*Conteneur de ROms*), un format destiné à regrouper et décrire les ROMs pour les ordinateurs **Amstrad CPC**, toutes générations confondues.
 
-Le format CRO est basé sur le **Resource Interchange File Format (RIFF)** et en exploite les mécanismes d’extensibilité et de structuration en blocs (*chunks*).
+Le format CRO repose sur le **Resource Interchange File Format (RIFF)** et utilise sa structure par chunks pour organiser les données.
 
 ---
 
-## 1. Rappels sur le format RIFF
+## 1. Vue générale du format RIFF
 
 ### 1.1 Principe général
 
-RIFF est un format de conteneur binaire organisé en **chunks** indépendants. Il ne définit pas la sémantique des données qu’il transporte, mais uniquement leur organisation structurelle.
+RIFF est un format binaire organisé en **chunks indépendants**. Il ne définit pas la signification des données, seulement l’organisation structurelle.
 
-Un fichier RIFF est constitué :
+Un fichier RIFF est constitué de :
 
-* d’un en-tête global,
-* suivi d’une suite de chunks, éventuellement imbriqués.
+* un en-tête global,
+* suivi d’une séquence de chunks, pouvant être imbriqués.
 
-Les chunks inconnus peuvent être ignorés sans compromettre l’analyse du fichier.
+Les chunks inconnus peuvent être ignorés sans casser la lecture.
 
 ---
 
 ### 1.2 En-tête RIFF
 
-Tout fichier RIFF commence par un en-tête de 12 octets :
+Tous les fichiers RIFF commencent par un en-tête de 12 octets :
 
-| Offset | Taille | Description                                                    |
-| -----: | -----: | -------------------------------------------------------------- |
-|   0x00 |      4 | Identifiant ASCII `"RIFF"`                                     |
-|   0x04 |      4 | Taille totale du fichier moins 8 octets (uint32 little-endian) |
-|   0x08 |      4 | *Form Type* identifiant le format applicatif                   |
+| Offset | Taille | Description                                   |
+| ------ | ------ | --------------------------------------------- |
+| 0x00   | 4      | Identifiant ASCII `"RIFF"`                     |
+| 0x04   | 4      | Taille totale du fichier moins 8 octets (uint32 LE) |
+| 0x08   | 4      | *Form Type* identifiant le format applicatif  |
 
-Dans le cas du format CRO, le *Form Type* est `"CRO "`.
+Pour CRO, le *Form Type* est `"CRO "`.
 
 ---
 
-### 1.3 Structure d’un chunk RIFF
+### 1.3 Structure des chunks
 
-Chaque chunk suit la structure suivante :
+Chaque chunk est structuré ainsi :
 
-| Champ      | Taille | Description                             |
-| ---------- | -----: | --------------------------------------- |
-| Chunk ID   |      4 | Identifiant ASCII                       |
-| Chunk Size |      4 | Taille des données du chunk (uint32 LE) |
-| Chunk Data |      N | Données                                 |
-| Padding    | 0 ou 1 | Alignement sur taille paire             |
+| Champ       | Taille | Description                     |
+| ----------- | ------ | --------------------------------|
+| Chunk ID    | 4      | Identifiant ASCII                |
+| Chunk Size  | 4      | Taille des données (uint32 LE)  |
+| Chunk Data  | N      | Données                          |
+| Padding     | 0 ou 1 | Alignement à un octet pair       |
 
-Si `Chunk Size` est impair, un octet de padding est ajouté après les données. Cet octet n’est pas comptabilisé dans `Chunk Size` mais fait partie de la taille globale du fichier.
+Si la taille est impaire, un octet de padding est ajouté **après les données**.
 
 ---
 
@@ -86,119 +86,109 @@ Un fichier CRO contient un ou plusieurs **GRRO**, chacun regroupant un ensemble 
 
 ---
 
-## 4. Chunk GRRO – Regroupement de ROMs
+## 4. Chunk GRRO – Groupe de ROMs
 
-Le chunk **GRRO** (*GRoupement de ROms*) décrit un groupe logique de ROMs.
+### 4.1 Sous-chunks
 
-### 4.1 Sous-chunks du GRRO
+| Chunk ID | Rôle                                |
+| -------- | ----------------------------------- |
+| `GNUM`   | Numéro unique du GRRO               |
+| `GLBL`   | Libellé descriptif du groupe        |
+| `ROM `   | Description d’une ROM               |
 
-Un chunk GRRO contient les sous-chunks suivants, dans un ordre libre :
+Un GRRO valide doit contenir **un GNUM, un GLBL et une ou plusieurs ROM `ROM `**.
 
-| Chunk ID | Rôle                         |
-| -------- | ---------------------------- |
-| `GNUM`   | Numéro unique du GRRO        |
-| `GLBL`   | Libellé descriptif du groupe |
-| `ROM `   | Description d’une ROM        |
+### 4.2 Structure binaire
 
-Un GRRO valide contient exactement **un** chunk `GNUM`, **un** chunk `GLBL`, et **un ou plusieurs** chunks `ROM `.
-
-### 4.2 Structure binaire du chunk GRRO
-
-Le chunk GRRO suit la structure RIFF standard :
-
-| Offset | Taille | Description                                       |
-| -----: | -----: | ------------------------------------------------- |
-|  +0x00 |      4 | Identifiant ASCII `"GRRO"`                        |
-|  +0x04 |      4 | Taille du chunk (uint32 LE)                       |
-|  +0x08 |      N | Données du chunk (sous-chunks GNUM + GLBL + ROMs) |
+| Offset | Taille | Description                       |
+| ------ | ------ | --------------------------------- |
+| 0x00   | 4      | Identifiant `"GRRO"`               |
+| 0x04   | 4      | Taille du chunk (uint32 LE)        |
+| 0x08   | N      | Données (GNUM + GLBL + ROMs)      |
 
 ---
 
 ## 5. Chunk ROM – Description d’une ROM
 
-Chaque ROM est décrite individuellement au sein d’un GRRO.
+Chaque ROM est définie dans un GRRO.
 
-### 5.1 Sous-chunks du chunk ROM
+### 5.1 Sous-chunks
 
-Un chunk ROM contient les sous-chunks suivants, dans un ordre libre :
+| Chunk ID | Rôle                             |
+| -------- | -------------------------------- |
+| `RID `   | Identifiant de la ROM            |
+| `RTYP`   | Type logique de la ROM           |
+| `RLOG`   | Numéro logique                   |
+| `RPHY`   | Numéro physique                  |
+| `RDT `   | Contenu binaire                  |
 
-| Chunk ID | Rôle                        |
-| -------- | --------------------------- |
-| `RID `   | Identifiant de la ROM       |
-| `RTYP`   | Type logique de la ROM      |
-| `RLOG`   | Numéro logique de sélection |
-| `RPHY`   | Numéro physique de la ROM   |
-| `RDT `   | Données binaires de la ROM  |
+Tous les sous-chunks sont obligatoires.
 
-Tous les sous-chunks ci-dessus sont obligatoires.
+### 5.2 Structure binaire
 
-### 5.2 Structure binaire des sous-chunks ROM
+#### `RID ` – Identifiant
 
-#### `RID ` – Identifiant de la ROM
+| Offset | Taille | Description                  |
+| ------ | ------ | ---------------------------- |
+| 0x00   | N      | Chaîne ASCII, longueur variable (non terminée) |
 
-| Offset | Taille | Description                               |
-| -----: | -----: | ----------------------------------------- |
-|  +0x00 |      N | Chaîne ASCII (non terminée), taille libre |
+#### `RTYP` – Type logique
 
-#### `RTYP` – Type logique de la ROM
-
-| Offset | Taille | Description                           |
-| -----: | -----: | ------------------------------------- |
-|  +0x00 |      4 | Constante de type logique (uint32 LE) |
+| Offset | Taille | Description                  |
+| ------ | ------ | ---------------------------- |
+| 0x00   | 4      | Constante de type (uint32 LE) |
 
 Valeurs définies :
 
-* `0x00000000` : ROM_LOW
-* `0x00000001` : ROM_HIGH
-* `0x00000002` : ROM_BANKABLE
+* `0x00000000` : ROM_LOW  
+* `0x00000001` : ROM_HIGH  
+* `0x00000002` : ROM_BANKABLE  
 * `0x00000003` : ROM_MF2
 
 #### `RLOG` – Numéro logique
 
-| Offset | Taille | Description                                                                 |
-| -----: | -----: | --------------------------------------------------------------------------- |
-|  +0x00 |      1 | Numéro logique de sélection (peut différer du numéro physique pour CPR/XPR) |
+| Offset | Taille | Description                  |
+| ------ | ------ | ---------------------------- |
+| 0x00   | 4      | Numéro logique de sélection (uint32 LE, 0–255) |
 
 #### `RPHY` – Numéro physique
 
-| Offset | Taille | Description                                            |
-| -----: | -----: | ------------------------------------------------------ |
-|  +0x00 |      1 | Numéro physique de la ROM (correspond au chunk `cbXX`) |
+| Offset | Taille | Description                  |
+| ------ | ------ | ---------------------------- |
+| 0x00   | 4      | Numéro physique (uint32 LE)  |
 
-#### `RDT ` – Données binaires de la ROM
+#### `RDT ` – Données binaires
 
-| Offset | Taille | Description            |
-| -----: | -----: | ---------------------- |
-|  +0x00 |      N | Contenu brut de la ROM |
+| Offset | Taille | Description                  |
+| ------ | ------ | ---------------------------- |
+| 0x00   | N      | Contenu brut de la ROM       |
 
 ---
 
-## 6. Neutralité matérielle du format CRO
+## 6. Neutralité matérielle
 
-Le format CRO décrit :
+Le format CRO décrit uniquement :
 
-* l’organisation des ROMs,
-* leurs propriétés intrinsèques,
-* leurs regroupements logiques.
+* l’organisation des ROMs
+* leurs propriétés intrinsèques
+* leur regroupement logique
 
-Il ne décrit pas :
+Il ne décrit **pas** :
 
-* les ports matériels,
-* les registres de sélection,
-* les mécanismes d’activation ou de mapping.
+* les ports matériels
+* les registres de sélection
+* les mécanismes d’activation ou mapping
 
-L’interprétation de ces informations relève de l’émulation ou du matériel réel, selon les capacités effectivement disponibles.
-
-Pour CPR/XPR, certaines ROMs physiques ont des numéros logiques différents (exemple : `cb03` → logique 7) ; cette distinction est conservée dans `RLOG`.
+L’interprétation est laissée à l’émulation ou au hardware réel.
 
 ---
 
 ## 7. Extensibilité
 
-Grâce à l’utilisation de RIFF :
+Grâce à RIFF :
 
-* de nouveaux chunks peuvent être ajoutés sans rompre la compatibilité,
-* des propriétés supplémentaires peuvent être introduites ultérieurement,
-* les implémentations peuvent ignorer les chunks non reconnus.
+* de nouveaux chunks peuvent être ajoutés sans casser la compatibilité
+* de nouvelles propriétés peuvent être introduites
+* les implémentations peuvent ignorer les chunks non reconnus
 
-Le format CRO est ainsi conçu pour être durable, extensible et fidèle aux architectures CPC existantes ou futures.
+CRO est donc durable, extensible et compatible avec toutes les architectures CPC.
