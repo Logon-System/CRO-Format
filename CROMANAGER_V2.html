@@ -17,7 +17,13 @@ h1,h2 { margin-top: 1em; }
 
 .group { border: 1px solid #999; padding: 10px; margin-bottom: 10px; }
 .group.selected { border: 2px solid #09f; }
-.group-header { cursor: pointer; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+
+.group-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
 
 .rom {
   display: flex;
@@ -28,36 +34,30 @@ h1,h2 { margin-top: 1em; }
   font-size: 1.2em;
 }
 
-.rom-name { 
-  font-family: monospace; 
-  font-weight: bold; 
-  min-width: 260px; 
-  overflow: hidden; 
-  text-overflow: ellipsis; 
+.rom-name {
+  font-family: monospace;
+  font-weight: bold;
+  min-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.rom-controls { 
-  display: flex; 
-  align-items: center; 
-  gap: 4px;
-  font-size: 0.9em;
-}
-
+.rom-controls { font-size: 0.9em; display: flex; gap: 4px; }
 .rom-type { min-width: 120px; }
-.rom-log  { min-width: 60px; }
-.rom-phy  { min-width: 60px; }
+.rom-log  { min-width: 70px; }
+.rom-phy  { min-width: 70px; }
 
-.rom-size { 
-  font-size: 0.9em; 
-  min-width: 140px; 
-  text-align: right; 
+.rom-size {
+  font-size: 0.9em;
+  min-width: 150px;
+  text-align: right;
 }
 
-.ROM_LOW { background: #ffcccc; }
-.ROM_HIGH { background: #cce5ff; }
-.ROM_BANKABLE { background: #ccffcc; }
-.ROM_MF2 { background: #ffcc99; }
+.ROM_LOW { background:#ffcccc; }
+.ROM_HIGH { background:#cce5ff; }
+.ROM_BANKABLE { background:#ccffcc; }
+.ROM_MF2 { background:#ffcc99; }
 
 button.danger { color: darkred; }
 </style>
@@ -66,295 +66,290 @@ button.danger { color: darkred; }
 
 <h1>CRO MANAGER</h1>
 
-<div id="dropImport" class="dropzone">Déposez ici un fichier CPR / XPR / CRO</div>
+<div id="dropImport" class="dropzone">
+  Déposez ici un fichier CPR / XPR / CRO
+</div>
+
 <button onclick="addGroup()">Ajouter un GRRO</button>
-<input id="exportName" type="text" value="" style="margin-left: 10px; width: 200px;">
-<button id="exportBtn" onclick="exportCRO()" disabled>Exporter .CRO</button>
+<input id="exportName" style="margin-left:10px;width:200px">
+<button onclick="exportCRO()" id="exportBtn" disabled>Exporter .CRO</button>
 
 <h2>Groupes</h2>
 <div id="groups"></div>
 
 <h2>Ajout de ROM binaires</h2>
-<div id="dropROM" class="dropzone">Déposez ici des fichiers ROM (dans le GRRO sélectionné)</div>
+<div id="dropROM" class="dropzone">
+  Déposez ici des fichiers ROM (dans le GRRO sélectionné)
+</div>
 
 <script>
 let groups = [];
 let selectedGroupIndex = null;
 const exportNameInput = document.getElementById("exportName");
 
-/* ==================== Initialisation ==================== */
-window.onload = () => {
-  exportNameInput.value = "ExportCRO";  // réinitialisation au démarrage
-};
+window.onload = () => exportNameInput.value = "ExportCRO";
 
-/* ==================== UI ==================== */
-function renderGroups() {
-  const container = document.getElementById("groups");
-  container.innerHTML = "";
+/* ================= UTIL ================= */
 
-  groups.forEach((g, gi) => {
+function readU16(arr, o){ return arr[o] | (arr[o+1]<<8); }
+function readU32(arr, o){ return arr[o] | (arr[o+1]<<8) | (arr[o+2]<<16) | (arr[o+3]<<24); }
+
+/* ================= UI ================= */
+
+function renderGroups(){
+  const c = document.getElementById("groups");
+  c.innerHTML = "";
+
+  groups.forEach((g,gi)=>{
     const gd = document.createElement("div");
-    gd.className = "group" + (gi === selectedGroupIndex ? " selected" : "");
+    gd.className = "group"+(gi===selectedGroupIndex?" selected":"");
 
-    const header = document.createElement("div");
-    header.className = "group-header";
+    const h = document.createElement("div");
+    h.className = "group-header";
+    h.onclick = ()=>{ selectedGroupIndex=gi; renderGroups(); };
 
-    header.appendChild(document.createTextNode("GRRO #"));
-    const gnumInput = document.createElement("input");
-    gnumInput.type = "number";
-    gnumInput.value = g.gnum;
-    gnumInput.addEventListener("change", e => g.gnum = e.target.valueAsNumber);
-    header.appendChild(gnumInput);
+    const num = document.createElement("input");
+    num.type="number"; num.value=g.gnum;
+    num.onchange=e=>g.gnum=e.target.valueAsNumber;
 
-    const glblInput = document.createElement("input");
-    glblInput.type = "text";
-    glblInput.value = g.glbl;
-    glblInput.style.minWidth = "200px";
-    glblInput.addEventListener("input", e => g.glbl = e.target.value);
-    glblInput.addEventListener("click", e => e.stopPropagation());
-    header.appendChild(glblInput);
+    const lbl = document.createElement("input");
+    lbl.value=g.glbl; lbl.style.minWidth="200px";
+    lbl.onclick=e=>e.stopPropagation();
+    lbl.oninput=e=>g.glbl=e.target.value;
 
-    const delBtn = document.createElement("button");
-    delBtn.className = "danger";
-    delBtn.textContent = "🗑";
-    delBtn.addEventListener("click", e => { e.stopPropagation(); deleteGroup(gi); });
-    header.appendChild(delBtn);
+    const del = document.createElement("button");
+    del.textContent="🗑"; del.className="danger";
+    del.onclick=e=>{ e.stopPropagation(); deleteGroup(gi); };
 
-    header.addEventListener("click", () => { selectedGroupIndex = gi; renderGroups(); });
-    gd.appendChild(header);
+    h.append("GRRO #",num,lbl,del);
+    gd.appendChild(h);
 
-    g.roms.forEach((r, ri) => {
-      const rd = document.createElement("div");
-      const cls = r.rtyp===0?"ROM_LOW":
-                  r.rtyp===1?"ROM_HIGH":
-                  r.rtyp===2?"ROM_BANKABLE":
-                  "ROM_MF2";
-      rd.className = "rom " + cls;
+    g.roms.forEach((r,ri)=>{
+      const rd=document.createElement("div");
+      rd.className="rom "+(
+        r.rtyp===0?"ROM_LOW":
+        r.rtyp===1?"ROM_HIGH":
+        r.rtyp===2?"ROM_BANKABLE":"ROM_MF2"
+      );
 
-      const nameDiv = document.createElement("div");
-      nameDiv.className = "rom-name";
-      nameDiv.textContent = r.rid;
-      rd.appendChild(nameDiv);
+      const nm=document.createElement("div");
+      nm.className="rom-name"; nm.textContent=r.rid;
 
-      const typeDiv = document.createElement("div");
-      typeDiv.className = "rom-controls rom-type";
-      typeDiv.innerHTML = `<label>Type:</label>
-        <select>
-          <option value="0">LOW</option>
-          <option value="1">HIGH</option>
-          <option value="2">BANKABLE</option>
-          <option value="3">MF2</option>
-        </select>`;
-      const typeSelect = typeDiv.querySelector("select");
-      typeSelect.value = r.rtyp;
-      typeSelect.addEventListener("change", () => {
-        r.rtyp = parseInt(typeSelect.value);
-        const cls = r.rtyp===0?"ROM_LOW":
-                    r.rtyp===1?"ROM_HIGH":
-                    r.rtyp===2?"ROM_BANKABLE":
-                    "ROM_MF2";
-        rd.className = "rom " + cls;
+      const sel=document.createElement("select");
+      ["LOW","HIGH","BANKABLE","MF2"].forEach((t,i)=>{
+        const o=document.createElement("option");
+        o.value=i; o.text=t; sel.appendChild(o);
       });
-      rd.appendChild(typeDiv);
+      sel.value=r.rtyp;
+      sel.onchange=()=>{
+        r.rtyp=+sel.value; renderGroups();
+      };
 
-      const logDiv = document.createElement("div");
-      logDiv.className = "rom-controls rom-log";
-      logDiv.innerHTML = `<label>Log:</label><input type="number" value="${r.rlog}" style="width:50px;">`;
-      logDiv.querySelector("input").addEventListener("change", e => { r.rlog = e.target.valueAsNumber; });
-      rd.appendChild(logDiv);
+      const log=document.createElement("input");
+      log.type="number"; log.value=r.rlog;
+      log.onchange=e=>r.rlog=e.target.valueAsNumber;
 
-      const phyDiv = document.createElement("div");
-      phyDiv.className = "rom-controls rom-phy";
-      phyDiv.innerHTML = `<label>Phy:</label><input type="number" value="${r.rphy}" style="width:50px;">`;
-      phyDiv.querySelector("input").addEventListener("change", e => { r.rphy = e.target.valueAsNumber; });
-      rd.appendChild(phyDiv);
+      const phy=document.createElement("input");
+      phy.type="number"; phy.value=r.rphy;
+      phy.onchange=e=>r.rphy=e.target.valueAsNumber;
 
-      const sizeDiv = document.createElement("div");
-      sizeDiv.className = "rom-size";
-      sizeDiv.textContent = r.rdt.length + " octets";
-      rd.appendChild(sizeDiv);
+      const sz=document.createElement("div");
+      sz.className="rom-size";
+      sz.textContent=r.rdt.length+" octets";
 
-      const delBtnROM = document.createElement("button");
-      delBtnROM.className = "danger";
-      delBtnROM.textContent = "🗑";
-      delBtnROM.onclick = () => deleteROM(gi, ri);
-      rd.appendChild(delBtnROM);
+      const delr=document.createElement("button");
+      delr.textContent="🗑"; delr.className="danger";
+      delr.onclick=()=>{ g.roms.splice(ri,1); renderGroups(); };
 
+      rd.append(
+        nm,
+        wrap("Type:",sel,"rom-type"),
+        wrap("Log:",log,"rom-log"),
+        wrap("Phy:",phy,"rom-phy"),
+        sz,delr
+      );
       gd.appendChild(rd);
     });
 
-    container.appendChild(gd);
+    c.appendChild(gd);
   });
 
-  document.getElementById("exportBtn").disabled = groups.length===0;
+  document.getElementById("exportBtn").disabled=!groups.length;
 }
 
-/* ==================== Actions ==================== */
-function addGroup(name="Nouveau groupe") {
-  const gnum = groups.length;
-  const group = { gnum, glbl: name, roms: [] };
-  groups.push(group);
-  selectedGroupIndex = groups.length - 1;
+function wrap(lbl,el,cls){
+  const d=document.createElement("div");
+  d.className="rom-controls "+cls;
+  d.append(lbl,el);
+  return d;
+}
+
+/* ================= GROUP ================= */
+
+function addGroup(name="Nouveau groupe"){
+  groups.push({ gnum:groups.length, glbl:name, roms:[] });
+  selectedGroupIndex=groups.length-1;
   renderGroups();
 }
-
 function deleteGroup(i){
-  if(!confirm("Supprimer ce GRRO ?")) return;
+  if(!confirm("Supprimer ce GRRO ?"))return;
   groups.splice(i,1);
-  if(selectedGroupIndex>=groups.length) selectedGroupIndex = groups.length-1;
+  selectedGroupIndex=null;
   renderGroups();
 }
 
-function deleteROM(gi, ri){
-  groups[gi].roms.splice(ri,1);
-  renderGroups();
-}
+/* ================= DROP ROM ================= */
 
-/* ==================== DROP ROM ==================== */
-const dropROM = document.getElementById("dropROM");
-dropROM.ondragover = e => { e.preventDefault(); dropROM.classList.add("dragover"); };
-dropROM.ondragleave = () => dropROM.classList.remove("dragover");
-dropROM.ondrop = e => {
-  e.preventDefault(); dropROM.classList.remove("dragover");
-  if(selectedGroupIndex===null) return alert("Sélectionne un GRRO");
-
+dropROM.ondragover=e=>{e.preventDefault();dropROM.classList.add("dragover");};
+dropROM.ondragleave=()=>dropROM.classList.remove("dragover");
+dropROM.ondrop=e=>{
+  e.preventDefault();dropROM.classList.remove("dragover");
+  if(selectedGroupIndex==null)return alert("Sélectionnez un GRRO");
   [...e.dataTransfer.files].forEach(f=>{
-    const fr = new FileReader();
-    fr.onload = () => {
+    const r=new FileReader();
+    r.onload=()=>{
       groups[selectedGroupIndex].roms.push({
-        rid: f.name,
-        rtyp: 1, // HIGH par défaut
-        rlog: 1,
-        rphy: 0,
-        rdt: new Uint8Array(fr.result)
+        rid:f.name,rtyp:1,rlog:1,rphy:0,rdt:new Uint8Array(r.result)
       });
       renderGroups();
     };
-    fr.readAsArrayBuffer(f);
+    r.readAsArrayBuffer(f);
   });
 };
 
-/* ==================== DROP IMPORT CPR/XPR/CRO ==================== */
-const dropImport = document.getElementById("dropImport");
-dropImport.ondragover = e => { e.preventDefault(); dropImport.classList.add("dragover"); };
-dropImport.ondragleave = () => dropImport.classList.remove("dragover");
-dropImport.ondrop = e => {
-  e.preventDefault(); dropImport.classList.remove("dragover");
+/* ================= IMPORT CPR / XPR / CRO ================= */
 
-  [...e.dataTransfer.files].forEach(f => {
-    const fr = new FileReader();
-    fr.onload = () => {
-      const arr = new Uint8Array(fr.result);
-      const sig = String.fromCharCode(...arr.slice(8,12));
+dropImport.ondragover=e=>{e.preventDefault();dropImport.classList.add("dragover");};
+dropImport.ondragleave=()=>dropImport.classList.remove("dragover");
+dropImport.ondrop=e=>{
+  e.preventDefault();dropImport.classList.remove("dragover");
 
-      exportNameInput.value = f.name.replace(/\.[^.]+$/,"");
+  [...e.dataTransfer.files].forEach(f=>{
+    const r=new FileReader();
+    r.onload=()=>{
+      const a=new Uint8Array(r.result);
+      const sig=String.fromCharCode(...a.slice(8,12));
+      exportNameInput.value=f.name.replace(/\.[^.]+$/,"");
 
-      if(sig==='AMS!'){ // CPR
-        const gname = f.name;
-        addGroup(gname);
-        const g = groups[selectedGroupIndex];
+      /* ===== CPR ===== */
+      if(sig==="AMS!"){
+        addGroup(f.name);
+        const g=groups[selectedGroupIndex];
         for(let i=0;i<32;i++){
-          const rtyp = i<8?2:1; 
-          const rlog = i===3?7:1; 
-          const rphy = i;
-          const chunkName = 'cb'+String(i).padStart(2,'0');
-          const idx = textIndexOfChunk(arr, chunkName);
+          const tag="cb"+String(i).padStart(2,"0");
+          const idx=scan(a,tag);
           if(idx>=0){
-            const size = arr[idx+4]+(arr[idx+5]<<8)+(arr[idx+6]<<16)+(arr[idx+7]<<24);
-            const data = arr.slice(idx+8, idx+8+size);
-            g.roms.push({rid:chunkName, rtyp, rlog, rphy, rdt:data});
+            const sz=readU32(a,idx+4);
+            const data=a.slice(idx+8,idx+8+sz);
+            g.roms.push({
+              rid:tag,
+              rtyp:i<8?2:1,
+              rlog:i===3?7:1,
+              rphy:i,
+              rdt:data
+            });
           }
         }
-      } else if(sig==='CRO '){ // CRO
-        let pos = 12; 
-        while(pos<arr.length){
-          const chunkId = String.fromCharCode(...arr.slice(pos,pos+4));
-          const chunkSize = arr[pos+4] | (arr[pos+5]<<8) | (arr[pos+6]<<16) | (arr[pos+7]<<24);
-          if(chunkId==='GRRO'){
-            addGroup("GRRO");
-            const g = groups[selectedGroupIndex];
-            let p = pos+8;
-            const end = pos+8+chunkSize;
-            while(p<end){
-              const subId = String.fromCharCode(...arr.slice(p,p+4));
-              const subSize = arr[p+4] | (arr[p+5]<<8) | (arr[p+6]<<16) | (arr[p+7]<<24);
-              if(subId==='RID '){
-                const name = String.fromCharCode(...arr.slice(p+8,p+8+subSize));
-                g.roms.push({rid:name, rtyp:1, rlog:1, rphy:0, rdt:new Uint8Array(0)});
-              }
-              p += 8+subSize;
-            }
-          }
-          pos += 8+chunkSize;
-        }
-      } else {
-        alert("Format non supporté");
       }
+
+      /* ===== XPR ===== */
+      else if(sig==="CXME"){
+        let pos=12,nbbk=null,cx=[];
+        while(pos<a.length){
+          const id=String.fromCharCode(...a.slice(pos,pos+4));
+          const sz=readU32(a,pos+4);
+          if(id==="NBBK") nbbk=readU16(a,pos+8);
+          else if(a[pos]===0x43 && a[pos+1]===0x58){
+            cx.push({
+              n:readU16(a,pos+2),
+              d:a.slice(pos+8,pos+8+sz)
+            });
+          }
+          pos+=8+sz+(sz&1);
+        }
+        if(nbbk==null) return alert("XPR sans NBBK");
+        cx.sort((x,y)=>x.n-y.n);
+
+        let g=null,c=0;
+        cx.forEach(x=>{
+          if(!g||c>=nbbk){
+            addGroup("XPR Group "+groups.length);
+            g=groups[selectedGroupIndex];
+            c=0;
+          }
+          g.roms.push({
+            rid:"CX"+x.n,
+            rtyp:x.n<8?2:1,
+            rlog:x.n===3?7:1,
+            rphy:x.n,
+            rdt:x.d
+          });
+          c++;
+        });
+      }
+
+      /* ===== CRO ===== */
+      else if(sig==="CRO "){
+        let p=12;
+        while(p<a.length){
+          if(String.fromCharCode(...a.slice(p,p+4))==="GRRO"){
+            addGroup("GRRO");
+          }
+          p+=8+readU32(a,p+4);
+        }
+      }
+      else alert("Format non supporté");
+
       renderGroups();
     };
-    fr.readAsArrayBuffer(f);
+    r.readAsArrayBuffer(f);
   });
 };
 
-function textIndexOfChunk(arr, name){
-  const ascii = [...name].map(c=>c.charCodeAt(0));
-  for(let i=0;i<arr.length-name.length;i++){
-    let match=true;
-    for(let j=0;j<name.length;j++){ if(arr[i+j]!==ascii[j]){match=false; break;} }
-    if(match) return i;
+function scan(a,s){
+  const t=[...s].map(c=>c.charCodeAt(0));
+  for(let i=0;i<a.length-t.length;i++){
+    if(t.every((v,j)=>a[i+j]===v)) return i;
   }
   return -1;
 }
 
-/* ==================== EXPORT CRO ==================== */
-function exportCRO(){ 
-  if(groups.length===0) return alert("Aucun GRRO à exporter !");
-  const arr = [];
+/* ================= EXPORT CRO ================= */
 
-  function writeStr(s){ for(let i=0;i<s.length;i++) arr.push(s.charCodeAt(i)); }
-  function writeUInt32LE(v){ arr.push(v&0xFF,v>>8&0xFF,v>>16&0xFF,v>>24&0xFF); }
+function exportCRO(){
+  const out=[];
+  const w=s=>[...s].forEach(c=>out.push(c.charCodeAt(0)));
+  const u=v=>out.push(v&255,v>>8&255,v>>16&255,v>>24&255);
 
-  writeStr("RIFF");
-  writeUInt32LE(0);
-  writeStr("CRO ");
-
+  w("RIFF");u(0);w("CRO ");
   groups.forEach(g=>{
-    writeStr("GRRO");
-    const startLen = arr.length;
-    writeUInt32LE(0);
-
-    writeStr("GLBL"); for(let c of g.glbl) arr.push(c.charCodeAt(0));
-    writeStr("GNUM"); writeUInt32LE(g.gnum);
-
+    w("GRRO");const L=out.length;u(0);
+    w("GLBL");w(g.glbl);
+    w("GNUM");u(g.gnum);
     g.roms.forEach(r=>{
-      writeStr("ROM ");
-      const rstart = arr.length;
-      writeUInt32LE(0);
-      writeStr("RID "); for(let c of r.rid) arr.push(c.charCodeAt(0));
-      writeStr("RTYP"); writeUInt32LE(r.rtyp);
-      writeStr("RLOG"); writeUInt32LE(r.rlog);
-      writeStr("RPHY"); writeUInt32LE(r.rphy);
-      writeStr("RDT "); arr.push(...r.rdt);
-      const rlen = arr.length-rstart-4;
-      arr[rstart]= rlen &0xFF; arr[rstart+1]=(rlen>>8)&0xFF; arr[rstart+2]=(rlen>>16)&0xFF; arr[rstart+3]=(rlen>>24)&0xFF;
+      w("ROM ");const R=out.length;u(0);
+      w("RID ");w(r.rid);
+      w("RTYP");u(r.rtyp);
+      w("RLOG");u(r.rlog);
+      w("RPHY");u(r.rphy);
+      w("RDT ");out.push(...r.rdt);
+      const l=out.length-R-4;
+      out[R]=l&255;out[R+1]=l>>8&255;out[R+2]=l>>16&255;out[R+3]=l>>24&255;
     });
-
-    const len = arr.length-startLen-4;
-    arr[startLen]= len &0xFF; arr[startLen+1]=(len>>8)&0xFF; arr[startLen+2]=(len>>16)&0xFF; arr[startLen+3]=(len>>24)&0xFF;
+    const l=out.length-L-4;
+    out[L]=l&255;out[L+1]=l>>8&255;out[L+2]=l>>16&255;out[L+3]=l>>24&255;
   });
+  const tl=out.length-8;
+  out[4]=tl&255;out[5]=tl>>8&255;out[6]=tl>>16&255;out[7]=tl>>24&255;
 
-  const totalLen = arr.length-8;
-  arr[4]= totalLen &0xFF; arr[5]=(totalLen>>8)&0xFF; arr[6]=(totalLen>>16)&0xFF; arr[7]=(totalLen>>24)&0xFF;
-
-  const blob = new Blob([new Uint8Array(arr)], {type:"application/octet-stream"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = exportNameInput.value+".cro";
+  const b=new Blob([new Uint8Array(out)]);
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(b);
+  a.download=exportNameInput.value+".cro";
   a.click();
 }
 
 renderGroups();
 </script>
-
 </body>
 </html>
