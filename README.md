@@ -1,4 +1,4 @@
-# CRO Format – Containers ROms for Amstrad CPC
+# CRO Format â€“ Containers ROms for Amstrad CPC
 
 This document describes the **CRO** (*Containers ROms*) format, designed to group and describe ROMs for **Amstrad CPC** computers, all generations.
 
@@ -57,23 +57,23 @@ Describes hierarchical ROM organization.
 
 ```
 RIFF
- +- CRO?
+ +- CRO
      +- GRRO
-     ¦   +- GLBL
-     ¦   +- GNUM
-     ¦   +- ROM?
-     ¦   ¦   +- RID?
-     ¦   ¦   +- RTYP
-     ¦   ¦   +- RLOG
-     ¦   ¦   +- RPHY
-     ¦   ¦   +- RDT?
-     ¦   +- ...
+     Â¦   +- GLBL
+     Â¦   +- GNUM
+     Â¦   +- ROM?
+     Â¦   Â¦   +- RID
+     Â¦   Â¦   +- RTYP
+     Â¦   Â¦   +- RLOG
+     Â¦   Â¦   +- RPHY
+     Â¦   Â¦   +- RDT
+     Â¦   +- ...
      +- ...
 ```
 
 ---
 
-## 4. GRRO – ROM Group
+## 4. GRRO â€“ ROM Group
 
 ### 4.1 Sub-chunks
 
@@ -130,7 +130,7 @@ Values:
 
 | Offset | Size | Description            |
 | ------ | ---- | ---------------------- |
-| 0x00   | 4    | Logical selection number (uint32 LE, 0–255) |
+| 0x00   | 4    | Logical selection number (uint32 LE, 0â€“255) |
 
 #### `RPHY`
 
@@ -173,3 +173,4 @@ RIFF allows:
 * unrecognized chunks to be ignored
 
 CRO is durable, extensible, and compatible with all CPC architectures.
+
