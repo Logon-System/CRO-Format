@@ -68,19 +68,19 @@ La structure logique d’un fichier CRO est la suivante :
 
 ```
 RIFF
- └─ CRO␠
-     ├─ GRRO
-     │   ├─ GLBL
-     │   ├─ GNUM
-     │   ├─ ROM␠
-     │   │   ├─ RID␠
-     │   │   ├─ RTYP
-     │   │   ├─ RLOG
-     │   │   ├─ RPHY
-     │   │   └─ RDT␠
-     │   └─ ...
-     └─ ...
-```
+└─ CRO␠
+├─ GRRO
+│ ├─ GLBL
+│ ├─ GNUM
+│ ├─ GMSK
+│ ├─ ROM␠
+│ │ ├─ RID␠
+│ │ ├─ RTYP
+│ │ ├─ RLOG
+│ │ ├─ RPHY
+│ │ └─ RDT␠
+│ └─ ...
+└─ ...
 
 Un fichier CRO contient un ou plusieurs **GRRO**, chacun regroupant un ensemble cohérent de ROMs.
 
@@ -90,21 +90,51 @@ Un fichier CRO contient un ou plusieurs **GRRO**, chacun regroupant un ensemble 
 
 ### 4.1 Sous-chunks
 
-| Chunk ID | Rôle                                |
-| -------- | ----------------------------------- |
-| `GNUM`   | Numéro unique du GRRO               |
-| `GLBL`   | Libellé descriptif du groupe        |
-| `ROM `   | Description d’une ROM               |
+| Chunk ID | Rôle |
+|--------|------|
+| `GNUM` | Numéro unique du GRRO |
+| `GLBL` | Libellé descriptif du groupe |
+| `GMSK` | Masque d’adressage |
+| `ROM ` | Description d’une ROM |
 
-Un GRRO valide doit contenir **un GNUM, un GLBL et une ou plusieurs ROM `ROM `**.
+Un GRRO valide doit contenir **un GNUM, un GLBL, un GMSK et une ou plusieurs ROM**.
 
 ### 4.2 Structure binaire
 
-| Offset | Taille | Description                       |
-| ------ | ------ | --------------------------------- |
-| 0x00   | 4      | Identifiant `"GRRO"`               |
-| 0x04   | 4      | Taille du chunk (uint32 LE)        |
-| 0x08   | N      | Données (GNUM + GLBL + ROMs)      |
+| Offset | Taille | Description |
+|------|------|------------|
+| 0x00 | 4 | Identifiant `"GRRO"` |
+| 0x04 | 4 | Taille du chunk (uint32 LE) |
+| 0x08 | N | Données (GNUM + GLBL + GMSK + ROMs) |
+
+---
+### 4.3 GNUM – Numéro de groupe
+
+| Offset | Taille | Description |
+|------|------|------------|
+| 0x00 | 4 | Numéro unique du groupe (uint32 LE, commence à 0) |
+
+---
+
+### 4.4 GLBL – Libellé du groupe
+
+| Offset | Taille | Description |
+|------|------|------------|
+| 0x00 | N | Chaîne ASCII descriptive (non terminée) |
+
+---
+
+### 4.5 GMSK – Masque d’adressage
+
+| Offset | Taille | Description |
+|------|------|------------|
+| 0x00 | 4 | Masque d’adressage (uint32 LE) |
+
+Le chunk `GMSK` définit un **masque binaire appliqué à l’adresse de la ROM** :
+adresse_effective = adresse & GMSK
+Ce mécanisme permet d’émuler des EEPROM de taille inférieure à l’espace d’adressage réel
+(par exemple l’adressage 19 bits des CPC PLUS), en provoquant une redondance automatique
+des ROMs lorsque l’adresse dépasse la capacité réelle du support.
 
 ---
 
