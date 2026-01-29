@@ -151,6 +151,21 @@ La solution la plus rapide, pour éviter une conversion d'adresse (et permettre 
 | &28000      | vide| 1     |
 | &2C000      | 4   | 1     |
 
+La base du groupe 1 de ROMs, sélectionné par une commande **GROUPSELECT 1** à la carte, sera donc &1C000. C'est à cette base qu'est ajouté l'adresse 19 bits fournie par le CPC. Et ainsi de suite.
+
+Ce serait plus coûteux qu'une simple addition de l'adresse de base avec l'adresse 19 bits, mais il est aussi possible d'économiser la place occupée par les ROMs non présentes en réalisant une translation des adresses de ROM dans un groupe en fonction de leur présence effective.
+
+**Exemple : Groupe 0** (ROMs physiques 0, 1, 4, 6) avec translation d'adresses  
+| Adresse 19 bits ASIC | Adresse RAM Carte | ROM | Groupe |
+|---------------------|-----------------|-----|-------|
+| &00000..&03FFF      | &00000..&03FFF  | 0   | 0     |
+| &04000..&07FFF      | &04000..&07FFF  | 1   | 0     |
+| &08000..&0BFFF      | traitement norom | –   | 0     |
+| &0C000..&0FFFF      | traitement norom | –   | 0     |
+| &10000..&13FFF      | &08000..&0BFFF  | 4   | 0     |
+| &14000..&17FFF      | traitement norom | –   | 0     |
+| &18000..&1BFFF      | &0C000..&0FFFF  | 6   | 0     |
+
 Une ROM "vide" ou "norom" renvoie toujours 0 sur toutes les adresses lues.
 
 ---
@@ -179,4 +194,5 @@ Cette organisation hiérarchique des ROMs et groupes dans les fichiers CRO perme
 - d'optimiser les performances et l'accès aux données dans des cartouches dépassant 512k.  
 
 L'utilisation des masques, des groupes et de la RAM permet de créer des systèmes modulables et rapides pour la lecture des ROMs dans le CPC PLUS et les cartes modernes comme C4CPC ou PICO GX.
+
 
