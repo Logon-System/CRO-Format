@@ -59,31 +59,34 @@ Describes hierarchical ROM organization.
 
 ```
 RIFF
- +- CRO
-     +- GRRO
-     ¦   +- GLBL
-     ¦   +- GNUM
-     ¦   +- ROM
-     ¦   ¦   +- RID
-     ¦   ¦   +- RTYP
-     ¦   ¦   +- RLOG
-     ¦   ¦   +- RPHY
-     ¦   ¦   +- RDT
-     ¦   +- ...
-     +- ...
+└─ CRO␠
+├─ GRRO
+│ ├─ GLBL
+│ ├─ GNUM
+│ ├─ GMSK
+│ ├─ ROM␠
+│ │ ├─ RID␠
+│ │ ├─ RTYP
+│ │ ├─ RLOG
+│ │ ├─ RPHY
+│ │ └─ RDT␠
+│ └─ ...
+└─ ...
 ```
-
 ---
 
 ## 4. GRRO – ROM Group
 
 ### 4.1 Sub-chunks
 
-| Chunk ID | Role                       |
-| -------- | -------------------------- |
-| `GNUM`   | Unique group number        |
-| `GLBL`   | Descriptive label          |
-| `ROM `   | ROM description            |
+| Chunk ID | Purpose |
+|--------|---------|
+| `GNUM` | Unique group number |
+| `GLBL` | Descriptive group label |
+| `GMSK` | Address mask |
+| `ROM ` | ROM description |
+
+---
 
 ### 4.2 Binary
 
@@ -91,7 +94,31 @@ RIFF
 | ------ | ---- | -------------------------------- |
 | 0x00   | 4    | `"GRRO"`                         |
 | 0x04   | 4    | Chunk size (uint32 LE)           |
-| 0x08   | N    | Sub-chunks: GNUM + GLBL + ROMs  |
+| 0x08   | N    | Sub-chunks: GNUM + GLBL + GMSK+ ROMs  |
+
+---
+### 4.3 GNUM – Group Number
+
+*(unchanged)*
+
+---
+
+### 4.4 GLBL – Group Label
+
+*(unchanged)*
+
+---
+
+### 4.5 GMSK – Address Mask
+
+| Offset | Size | Description |
+|------|------|------------|
+| 0x00 | 4 | Address mask (uint32 little-endian) |
+
+`GMSK` defines a binary mask applied to the ROM address: effective_address = address & GMSK
+
+This allows emulation of EEPROMs smaller than the available address space
+(e.g. CPC PLUS 19-bit addressing), by forcing ROM mirroring beyond the physical size.
 
 ---
 
@@ -175,6 +202,7 @@ RIFF allows:
 * unrecognized chunks to be ignored
 
 CRO is durable, extensible, and compatible with all CPC architectures.
+
 
 
 
