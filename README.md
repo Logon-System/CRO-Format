@@ -99,13 +99,16 @@ RIFF
 ---
 ### 4.3 GNUM – Group Number
 
-*(unchanged)*
+| Offset | Size | Description |
+|------|------|------------|
+| 0x00 | 4 | Unique number of group (uint32 LE, start at 0) |
 
 ---
-
 ### 4.4 GLBL – Group Label
 
-*(unchanged)*
+| Offset | Size | Description |
+|------|------|------------|
+| 0x00 | N | Description ASCII String |
 
 ---
 
@@ -202,6 +205,7 @@ RIFF allows:
 * unrecognized chunks to be ignored
 
 CRO is durable, extensible, and compatible with all CPC architectures.
+
 
 
 
