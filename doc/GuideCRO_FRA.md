@@ -178,7 +178,7 @@ Le CPC fournit une adresse 19 bits via son port cartouche (A0..A13, AC14..AC18),
 - son masque (par défaut à &FFFFFFFF si non présent)  
 
 Formule de lecture :  
-AdresseLecture = (CpcBusAddress AND GGRO[CurrentGroup].GMSK) + GGRO[CurrentGroup].BaseAddress
+*AdresseLecture = (CpcBusAddress AND GGRO[CurrentGroup].GMSK) + GGRO[CurrentGroup].BaseAddress*
 
 
 `CurrentGroup` résulte d'une commande **GROUPSELECT** passée à la carte.
@@ -194,5 +194,6 @@ Cette organisation hiérarchique des ROMs et groupes dans les fichiers CRO perme
 - d'optimiser les performances et l'accès aux données dans des cartouches dépassant 512k.  
 
 L'utilisation des masques, des groupes et de la RAM permet de créer des systèmes modulables et rapides pour la lecture des ROMs dans le CPC PLUS et les cartes modernes comme C4CPC ou PICO GX.
+
 
 
