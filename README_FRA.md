@@ -81,9 +81,7 @@ RIFF
 │ │ └─ RDT␠
 │ └─ ...
 └─ ...
-
 Un fichier CRO contient un ou plusieurs **GRRO**, chacun regroupant un ensemble cohérent de ROMs.
-
 ---
 
 ## 4. Chunk GRRO – Groupe de ROMs
