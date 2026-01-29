@@ -145,6 +145,25 @@ The fastest solution, to avoid address conversion (and to store only physical RO
 | &28000      | empty | 1   |
 | &2C000      | 4   | 1     |
 
+When the board reads a CRO file, it copies available ROMs from each group into RAM starting at 0, considering their physical numbers.
+
+The fastest solution, to avoid address conversion (and to store only physical ROMs in RAM), is to leave 16k "holes" in RAM for ROMs not defined in a group.
+
+The base of Group 1 ROMs, selected by a **GROUPSELECT 1** command to the board, will therefore be &1C000. The 19-bit address provided by the CPC is added to this base. And so on.
+
+Although a simple addition of the base address with the 19-bit address is cheaper computationally, it is also possible to save space occupied by missing ROMs by translating ROM addresses within a group based on their actual presence.
+
+**Example: Group 0** (physical ROMs 0, 1, 4, 6) with address translation  
+| 19-bit ASIC Address | Board RAM Address | ROM | Group |
+|--------------------|-----------------|-----|-------|
+| &00000..&03FFF     | &00000..&03FFF  | 0   | 0     |
+| &04000..&07FFF     | &04000..&07FFF  | 1   | 0     |
+| &08000..&0BFFF     | norom processing | –  | 0     |
+| &0C000..&0FFFF     | norom processing | –  | 0     |
+| &10000..&13FFF     | &08000..&0BFFF  | 4   | 0     |
+| &14000..&17FFF     | norom processing | –  | 0     |
+| &18000..&1BFFF     | &0C000..&0FFFF  | 6   | 0     |
+
 An empty or "norom" ROM always returns 0 on all read addresses.
 
 ---
@@ -170,3 +189,4 @@ This hierarchical organization of ROMs and groups in CRO files allows:
 - optimizing performance and data access for cartridges exceeding 512k.
 
 The use of masks, groups, and RAM enables modular and fast systems for reading ROMs on the CPC PLUS and modern boards like C4CPC or PICO GX.
+
