@@ -41,7 +41,7 @@ Configuring CPR in early emulators (like WinAPE) is cumbersome. It coexisted wit
 
 # Limitations of the CPR Format
 
-The CPR format was built using a standard method called "RIFF". However, it is too simplistic because the ROMs have no properties and must be present in the file in physical order, or they will be processed incorrectly. This proves problematic.
+The CPR format was built using a standard method called "RIFF". However, it is too simplistic because the ROMs have no properties (type, size,..). This proves problematic.
 
 Indeed, PLUS machines are backward compatible with the old range, which uses the concept of a logical ROM. This is notably the case with the disk ROM (AMSDOS), which has logical number 7, even though the machine has only 3 ROMs maximum (6128 and 664 for older generations). When a program on the old range selects ROM 7, it electronically knows it is being called and responds. Its physical "order" is largely irrelevant.
 
