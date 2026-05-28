@@ -92,6 +92,14 @@ Un fichier CRO contient un ou plusieurs **GRRO**, chacun regroupant un ensemble 
 
 ## 4. Chunk GRRO – Groupe de ROMs
 
+| Offset | Taille | Description |
+|------|------|------------|
+| 0x00 | 4 | Identifiant `"GRRO"` |
+| 0x04 | 4 | Taille du chunk (uint32 LE) |
+| 0x08 | N | Données (GNUM + GLBL + GMSK + ROMs) |
+
+---
+
 ### 4.1 Sous-chunks
 
 | Chunk ID | Rôle |
@@ -103,16 +111,8 @@ Un fichier CRO contient un ou plusieurs **GRRO**, chacun regroupant un ensemble 
 
 Un GRRO valide doit contenir **un GNUM, un GLBL, un GMSK et une ou plusieurs ROM**.
 
-### 4.2 Structure binaire
-
-| Offset | Taille | Description |
-|------|------|------------|
-| 0x00 | 4 | Identifiant `"GRRO"` |
-| 0x04 | 4 | Taille du chunk (uint32 LE) |
-| 0x08 | N | Données (GNUM + GLBL + GMSK + ROMs) |
-
 ---
-### 4.3 GNUM – Numéro de groupe
+### 4.2 GNUM – Numéro de groupe
 
 | Offset | Taille | Description |
 |------|------|------------|
@@ -122,7 +122,7 @@ Un GRRO valide doit contenir **un GNUM, un GLBL, un GMSK et une ou plusieurs ROM
 
 ---
 
-### 4.4 GLBL – Libellé du groupe
+### 4.3 GLBL – Libellé du groupe
 
 | Offset | Taille | Description |
 |------|------|------------|
@@ -132,11 +132,11 @@ Un GRRO valide doit contenir **un GNUM, un GLBL, un GMSK et une ou plusieurs ROM
 
 ---
 
-### 4.5 GMSK – Masque d’adressage
+### 4.4 GMSK – Masque d’adressage
 
 | Offset | Taille | Description |
 |------|------|------------|
-| 0x00 | 4 | Identifiant "GLBL" |
+| 0x00 | 4 | Identifiant "GMSK" |
 | 0x04 | 4 | Taille des données (uint32 LE) |
 | 0x08 | 4 | Masque d’adressage (uint32 LE) |
 
@@ -152,6 +152,14 @@ des ROMs lorsque l’adresse dépasse la capacité réelle du support.
 
 Chaque ROM est définie dans un GRRO.
 
+| Offset | Taille | Description |
+|------|------|------------|
+| 0x00 | 4 | Identifiant `"ROM "` |
+| 0x04 | 4 | Taille du chunk (uint32 LE) |
+| 0x08 | N | Données (RID + RTYP + RLOG + RPHY + RDT) |
+
+---
+
 ### 5.1 Sous-chunks
 
 | Chunk ID | Rôle                             |
@@ -164,9 +172,9 @@ Chaque ROM est définie dans un GRRO.
 
 Tous les sous-chunks sont obligatoires.
 
-### 5.2 Structure binaire
+---
 
-#### `RID ` – Identifiant
+### 5.2 `RID ` – Identifiant
 
 | Offset | Taille | Description                  |
 | ------ | ------ | ---------------------------- |
@@ -174,11 +182,13 @@ Tous les sous-chunks sont obligatoires.
 | 0x04 | 4 | Taille des données (uint32 LE) |
 | 0x08   | N      | Chaîne ASCII, longueur variable (non terminée) |
 
-#### `RTYP` – Type logique
+---
+
+### 5.3 `RTYP` – Type logique
 
 | Offset | Taille | Description                  |
 | ------ | ------ | ---------------------------- |
-| 0x00 | 4 | Identifiant "GLBL" |
+| 0x00 | 4 | Identifiant "RTYP" |
 | 0x04 | 4 | Taille des données (uint32 LE) |
 | 0x08   | 4     | Constante de type (uint32 LE) |
 
@@ -188,28 +198,34 @@ Valeurs définies :
 * `0x00000001` : ROM_HIGH  
 * `0x00000002` : ROM_BANKABLE  
 * `0x00000003` : ROM_MF2
+  
+---
 
-#### `RLOG` – Numéro logique
+### 5.4 `RLOG` – Numéro logique
 
 | Offset | Taille | Description                  |
 | ------ | ------ | ---------------------------- |
-| 0x00 | 4 | Identifiant "GLBL" |
+| 0x00 | 4 | Identifiant "RLOG" |
 | 0x04 | 4 | Taille des données (uint32 LE) |
 | 0x08   | 4      | Numéro logique de sélection (uint32 LE, 0–255) |
 
-#### `RPHY` – Numéro physique
+---
+
+### 5.5 `RPHY` – Numéro physique
 
 | Offset | Taille | Description                  |
 | ------ | ------ | ---------------------------- |
-| 0x00 | 4 | Identifiant "GLBL" |
+| 0x00 | 4 | Identifiant "RPHY" |
 | 0x04 | 4 | Taille des données (uint32 LE) |
 | 0x08   | 4      | Numéro physique (uint32 LE)  |
 
-#### `RDT ` – Données binaires
+---
+
+### 5.6 `RDT ` – Données binaires
 
 | Offset | Taille | Description                  |
 | ------ | ------ | ---------------------------- |
-| 0x00 | 4 | Identifiant "GLBL" |
+| 0x00 | 4 | Identifiant "RDT " |
 | 0x04 | 4 | Taille des données (uint32 LE) |
 | 0x08   | N      | Contenu brut de la ROM       |
 
