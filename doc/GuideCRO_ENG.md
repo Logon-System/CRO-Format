@@ -174,10 +174,12 @@ The CPC provides a 19-bit address via its cartridge port (A0..A13, AC14..AC18), 
 - its base address  
 - its mask (default &FFFFFFFF if not present)  
 
-Read formula:  
-`ReadAddress = (CpcBusAddress AND GGRO[CurrentGroup].GMSK) + GGRO[CurrentGroup].BaseAddress`
+Read formula, assuming MaskSizeCartridge represents the total size minus 1 of the ROM accessible via the card:
+`ReadAddress = ((CpcBusAddress AND GGRO[CurrentGroup].GMSK) + GGRO[CurrentGroup].BaseAddress) and MaskSizeCartridge`
 
-`CurrentGroup` results from a **GROUPSELECT** command sent to the board.
+`CurrentGroup` results from a **GROUPSELECT** command passed to the card.
+
+See the example file in this folder.
 
 ---
 # Conclusion
