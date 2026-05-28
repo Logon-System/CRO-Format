@@ -46,6 +46,10 @@ CRO files: *Form Type* = `"CRO "`.
 
 Padding byte added if data size is odd.
 
+### 1.4 Schematic
+
+![RIFF schematics](./images/RIFF.png)
+
 ---
 
 ## 2. CRO File Identification
