@@ -48,7 +48,7 @@ Padding byte added if data size is odd.
 
 ### 1.4 Schematic
 
-![RIFF schematics](./images/RIFF.png)
+![RIFF schematics](./images/RIFF.gif)
 
 ---
 
