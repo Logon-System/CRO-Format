@@ -180,7 +180,7 @@ Le CPC fournit une adresse 19 bits via son port cartouche (A0..A13, AC14..AC18),
 - son masque (par défaut à &FFFFFFFF si non présent)  
 
 Formule de lecture, en considérant que MaskSizeCartridge représente la taille totale-1 de la rom accessible via la carte :  
-`AdresseLecture = ((CpcBusAddress AND GGRO[CurrentGroup].GMSK) + GGRO[CurrentGroup].BaseAddress`) and MaskSizeCartridge
+`AdresseLecture = ((CpcBusAddress AND GGRO[CurrentGroup].GMSK) + GGRO[CurrentGroup].BaseAddress) and MaskSizeCartridge`
 
 `CurrentGroup` résulte d'une commande **GROUPSELECT** passée à la carte.
 
