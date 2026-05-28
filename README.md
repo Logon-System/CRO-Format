@@ -87,6 +87,8 @@ RIFF
 | 0x04   | 4    | Chunk size (uint32 LE)           |
 | 0x08   | N    | Sub-chunks: GNUM + GLBL + GMSK+ ROMs  |
 
+---
+
 ### 4.1 Sub-chunks
 
 | Chunk ID | Purpose |
