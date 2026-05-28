@@ -105,14 +105,18 @@ RIFF
 
 | Offset | Size | Description |
 |------|------|------------|
-| 0x00 | 4 | Unique number of group (uint32 LE, start at 0) |
+| 0x00   | 4    | `"GNUM"`                         |
+| 0x04   | 4    | Data size (uint32 LE)           |
+| 0x08 | 4 | Unique number of group (uint32 LE, start at 0) |
 
 ---
 ### 4.4 GLBL – Group Label
 
 | Offset | Size | Description |
 |------|------|------------|
-| 0x00 | N | Description ASCII String |
+| 0x00   | 4    | `"GLBL"`                         |
+| 0x04   | 4    | Data size (uint32 LE)           |
+| 0x08 | N | Description ASCII String |
 
 ---
 
@@ -120,7 +124,9 @@ RIFF
 
 | Offset | Size | Description |
 |------|------|------------|
-| 0x00 | 4 | Address mask (uint32 little-endian) |
+| 0x00   | 4    | `"GMSK"`                         |
+| 0x04   | 4    | Data size (uint32 LE)           |
+| 0x08 | 4 | Address mask (uint32 little-endian) |
 
 `GMSK` defines a binary mask applied to the ROM address: effective_address = address & GMSK
 
@@ -147,13 +153,17 @@ This allows emulation of EEPROMs smaller than the available address space
 
 | Offset | Size | Description         |
 | ------ | ---- | ----------------- |
-| 0x00   | N    | ASCII string       |
+| 0x00   | 4    | `"RID "`                         |
+| 0x04   | 4    | Data size (uint32 LE)           |
+| 0x08   | N    | ASCII string       |
 
 #### `RTYP`
 
 | Offset | Size | Description         |
 | ------ | ---- | ----------------- |
-| 0x00   | 4    | Logical type uint32 LE |
+| 0x00   | 4    | `"RTYP"`                         |
+| 0x04   | 4    | Data size (uint32 LE)           |
+| 0x08   | 4    | Logical type uint32 LE |
 
 Values:
 
@@ -166,19 +176,25 @@ Values:
 
 | Offset | Size | Description            |
 | ------ | ---- | ---------------------- |
-| 0x00   | 4    | Logical selection number (uint32 LE, 0–255) |
+| 0x00   | 4    | `"RLOG"`                         |
+| 0x04   | 4    | Data size (uint32 LE)           |
+| 0x08   | 4    | Logical selection number (uint32 LE, 0–255) |
 
 #### `RPHY`
 
 | Offset | Size | Description            |
 | ------ | ---- | ---------------------- |
-| 0x00   | 4    | Physical ROM number (uint32 LE) |
+| 0x00   | 4    | `"RPHY"`                         |
+| 0x04   | 4    | Data size (uint32 LE)           |
+| 0x08   | 4    | Physical ROM number (uint32 LE) |
 
 #### `RDT `
 
 | Offset | Size | Description           |
 | ------ | ---- | -------------------- |
-| 0x00   | N    | ROM raw contents      |
+| 0x00   | 4    | `"RDT "`                         |
+| 0x04   | 4    | Data size (uint32 LE)           |
+| 0x08   | N    | ROM raw contents      |
 
 ---
 
