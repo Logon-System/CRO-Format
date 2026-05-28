@@ -170,7 +170,7 @@ Tous les sous-chunks sont obligatoires.
 
 | Offset | Taille | Description                  |
 | ------ | ------ | ---------------------------- |
-| 0x00 | 4 | Identifiant "RID L" |
+| 0x00 | 4 | Identifiant "RID " |
 | 0x04 | 4 | Taille des données (uint32 LE) |
 | 0x08   | N      | Chaîne ASCII, longueur variable (non terminée) |
 
