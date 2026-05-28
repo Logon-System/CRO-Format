@@ -116,7 +116,9 @@ Un GRRO valide doit contenir **un GNUM, un GLBL, un GMSK et une ou plusieurs ROM
 
 | Offset | Taille | Description |
 |------|------|------------|
-| 0x00 | 4 | Numéro unique du groupe (uint32 LE, commence à 0) |
+| 0x00 | 4 | Identifiant "GNUM" |
+| 0x04 | 4 | Taille des données (uint32 LE) |
+| 0x08 | 4 | Numéro unique du groupe (uint32 LE, commence à 0) |
 
 ---
 
@@ -124,7 +126,9 @@ Un GRRO valide doit contenir **un GNUM, un GLBL, un GMSK et une ou plusieurs ROM
 
 | Offset | Taille | Description |
 |------|------|------------|
-| 0x00 | N | Chaîne ASCII descriptive (non terminée) |
+| 0x00 | 4 | Identifiant "GLBL" |
+| 0x04 | 4 | Taille des données (uint32 LE) |
+| 0x08 | N | Chaîne ASCII descriptive (non terminée) |
 
 ---
 
@@ -132,7 +136,9 @@ Un GRRO valide doit contenir **un GNUM, un GLBL, un GMSK et une ou plusieurs ROM
 
 | Offset | Taille | Description |
 |------|------|------------|
-| 0x00 | 4 | Masque d’adressage (uint32 LE) |
+| 0x00 | 4 | Identifiant "GLBL" |
+| 0x04 | 4 | Taille des données (uint32 LE) |
+| 0x08 | 4 | Masque d’adressage (uint32 LE) |
 
 Le chunk `GMSK` définit un **masque binaire appliqué à l’adresse de la ROM** :
 adresse_effective = adresse & GMSK
@@ -164,13 +170,17 @@ Tous les sous-chunks sont obligatoires.
 
 | Offset | Taille | Description                  |
 | ------ | ------ | ---------------------------- |
-| 0x00   | N      | Chaîne ASCII, longueur variable (non terminée) |
+| 0x00 | 4 | Identifiant "RID L" |
+| 0x04 | 4 | Taille des données (uint32 LE) |
+| 0x08   | N      | Chaîne ASCII, longueur variable (non terminée) |
 
 #### `RTYP` – Type logique
 
 | Offset | Taille | Description                  |
 | ------ | ------ | ---------------------------- |
-| 0x00   | 4      | Constante de type (uint32 LE) |
+| 0x00 | 4 | Identifiant "GLBL" |
+| 0x04 | 4 | Taille des données (uint32 LE) |
+| 0x08   | 4     | Constante de type (uint32 LE) |
 
 Valeurs définies :
 
@@ -183,19 +193,25 @@ Valeurs définies :
 
 | Offset | Taille | Description                  |
 | ------ | ------ | ---------------------------- |
-| 0x00   | 4      | Numéro logique de sélection (uint32 LE, 0–255) |
+| 0x00 | 4 | Identifiant "GLBL" |
+| 0x04 | 4 | Taille des données (uint32 LE) |
+| 0x08   | 4      | Numéro logique de sélection (uint32 LE, 0–255) |
 
 #### `RPHY` – Numéro physique
 
 | Offset | Taille | Description                  |
 | ------ | ------ | ---------------------------- |
-| 0x00   | 4      | Numéro physique (uint32 LE)  |
+| 0x00 | 4 | Identifiant "GLBL" |
+| 0x04 | 4 | Taille des données (uint32 LE) |
+| 0x08   | 4      | Numéro physique (uint32 LE)  |
 
 #### `RDT ` – Données binaires
 
 | Offset | Taille | Description                  |
 | ------ | ------ | ---------------------------- |
-| 0x00   | N      | Contenu brut de la ROM       |
+| 0x00 | 4 | Identifiant "GLBL" |
+| 0x04 | 4 | Taille des données (uint32 LE) |
+| 0x08   | N      | Contenu brut de la ROM       |
 
 ---
 
