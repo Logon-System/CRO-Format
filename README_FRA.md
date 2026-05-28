@@ -49,6 +49,12 @@ Chaque chunk est structuré ainsi :
 Si la taille est impaire, un octet de padding est ajouté **après les données**.
 
 ---
+### 1.4 Vue globale
+
+![RIFF Vue globale](./images/RIFF.gif)
+
+---
+
 
 ## 2. Identification d’un fichier CRO
 
