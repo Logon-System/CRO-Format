@@ -142,6 +142,8 @@ This allows emulation of EEPROMs smaller than the available address space
 | 0x04   | 4    | Chunk size (uint32 LE)           |
 | 0x08   | N    | Sub-chunks: RID + RTYP + RLOG+ RPHY + RDT  |
 
+---
+
 ### 5.1 Sub-chunks
 
 | Chunk ID | Role                   |
@@ -152,8 +154,9 @@ This allows emulation of EEPROMs smaller than the available address space
 | `RPHY`   | Physical number       |
 | `RDT `   | Binary data           |
 
+---
 
-#### 5.2 `RID `
+### 5.2 `RID `
 
 | Offset | Size | Description         |
 | ------ | ---- | ----------------- |
@@ -161,7 +164,8 @@ This allows emulation of EEPROMs smaller than the available address space
 | 0x04   | 4    | Data size (uint32 LE)           |
 | 0x08   | N    | ASCII string       |
 
-#### 5.3 `RTYP`
+---
+### 5.3 `RTYP`
 
 | Offset | Size | Description         |
 | ------ | ---- | ----------------- |
@@ -175,24 +179,24 @@ Values:
 * 0x00000001 : ROM_HIGH  
 * 0x00000002 : ROM_BANKABLE  
 * 0x00000003 : ROM_MF2
-
-#### 5.4 `RLOG`
+---
+### 5.4 `RLOG`
 
 | Offset | Size | Description            |
 | ------ | ---- | ---------------------- |
 | 0x00   | 4    | `"RLOG"`                         |
 | 0x04   | 4    | Data size (uint32 LE)           |
 | 0x08   | 4    | Logical selection number (uint32 LE, 0–255) |
-
-#### 5.5 `RPHY`
+---
+### 5.5 `RPHY`
 
 | Offset | Size | Description            |
 | ------ | ---- | ---------------------- |
 | 0x00   | 4    | `"RPHY"`                         |
 | 0x04   | 4    | Data size (uint32 LE)           |
 | 0x08   | 4    | Physical ROM number (uint32 LE) |
-
-#### 5.6 `RDT `
+---
+### 5.6 `RDT `
 
 | Offset | Size | Description           |
 | ------ | ---- | -------------------- |
