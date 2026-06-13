@@ -42,7 +42,7 @@ Chaque chunk est structuré ainsi :
 | Champ       | Taille | Description                     |
 | ----------- | ------ | --------------------------------|
 | Chunk ID    | 4      | Identifiant ASCII                |
-| Chunk Size  | 4      | Taille des données (uint32 LE)  |
+| Chunk Size  | 4      | Taille des données moins 8 octets (uint32 LE)  |
 | Chunk Data  | N      | Données                          |
 | Padding     | 0 ou 1 | Alignement à un octet pair       |
 
@@ -95,7 +95,7 @@ Un fichier CRO contient un ou plusieurs **GRRO**, chacun regroupant un ensemble 
 | Offset | Taille | Description |
 |------|------|------------|
 | 0x00 | 4 | Identifiant `"GRRO"` |
-| 0x04 | 4 | Taille du chunk (uint32 LE) |
+| 0x04 | 4 | Taille du chunk moins 8 octets (uint32 LE) |
 | 0x08 | N | Données (GNUM + GLBL + GMSK + ROMs) |
 
 ---
@@ -117,7 +117,7 @@ Un GRRO valide doit contenir **un GNUM, un GLBL, un GMSK et une ou plusieurs ROM
 | Offset | Taille | Description |
 |------|------|------------|
 | 0x00 | 4 | Identifiant "GNUM" |
-| 0x04 | 4 | Taille des données (uint32 LE) |
+| 0x04 | 4 | Taille du chunk moins 8 octets (uint32 LE) |
 | 0x08 | 4 | Numéro unique du groupe (uint32 LE, commence à 0) |
 
 ---
@@ -127,7 +127,7 @@ Un GRRO valide doit contenir **un GNUM, un GLBL, un GMSK et une ou plusieurs ROM
 | Offset | Taille | Description |
 |------|------|------------|
 | 0x00 | 4 | Identifiant "GLBL" |
-| 0x04 | 4 | Taille des données (uint32 LE) |
+| 0x04 | 4 | Taille du chunk moins 8 octets (uint32 LE) |
 | 0x08 | N | Chaîne ASCII descriptive (non terminée) |
 
 ---
@@ -137,7 +137,7 @@ Un GRRO valide doit contenir **un GNUM, un GLBL, un GMSK et une ou plusieurs ROM
 | Offset | Taille | Description |
 |------|------|------------|
 | 0x00 | 4 | Identifiant "GMSK" |
-| 0x04 | 4 | Taille des données (uint32 LE) |
+| 0x04 | 4 | Taille du chunk moins 8 octets (uint32 LE) |
 | 0x08 | 4 | Masque d’adressage (uint32 LE) |
 
 Le chunk `GMSK` définit un **masque binaire appliqué à l’adresse de la ROM** :
@@ -155,7 +155,7 @@ Chaque ROM est définie dans un GRRO.
 | Offset | Taille | Description |
 |------|------|------------|
 | 0x00 | 4 | Identifiant `"ROM "` |
-| 0x04 | 4 | Taille du chunk (uint32 LE) |
+| 0x04 | 4 | Taille du chunk moins 8 octets (uint32 LE) |
 | 0x08 | N | Données (RID + RTYP + RLOG + RPHY + RDT) |
 
 ---
@@ -179,7 +179,7 @@ Tous les sous-chunks sont obligatoires.
 | Offset | Taille | Description                  |
 | ------ | ------ | ---------------------------- |
 | 0x00 | 4 | Identifiant "RID " |
-| 0x04 | 4 | Taille des données (uint32 LE) |
+| 0x04 | 4 | Taille du chunk moins 8 octets (uint32 LE) |
 | 0x08   | N      | Chaîne ASCII, longueur variable (non terminée) |
 
 ---
@@ -189,7 +189,7 @@ Tous les sous-chunks sont obligatoires.
 | Offset | Taille | Description                  |
 | ------ | ------ | ---------------------------- |
 | 0x00 | 4 | Identifiant "RTYP" |
-| 0x04 | 4 | Taille des données (uint32 LE) |
+| 0x04 | 4 | Taille du chunk moins 8 octets (uint32 LE) |
 | 0x08   | 4     | Constante de type (uint32 LE) |
 
 Valeurs définies :
@@ -206,7 +206,7 @@ Valeurs définies :
 | Offset | Taille | Description                  |
 | ------ | ------ | ---------------------------- |
 | 0x00 | 4 | Identifiant "RLOG" |
-| 0x04 | 4 | Taille des données (uint32 LE) |
+| 0x04 | 4 | Taille du chunk moins 8 octets (uint32 LE) |
 | 0x08   | 4      | Numéro logique de sélection (uint32 LE, 0–255) |
 
 ---
@@ -216,7 +216,7 @@ Valeurs définies :
 | Offset | Taille | Description                  |
 | ------ | ------ | ---------------------------- |
 | 0x00 | 4 | Identifiant "RPHY" |
-| 0x04 | 4 | Taille des données (uint32 LE) |
+| 0x04 | 4 | Taille du chunk moins 8 octets (uint32 LE) |
 | 0x08   | 4      | Numéro physique (uint32 LE)  |
 
 ---
@@ -226,7 +226,7 @@ Valeurs définies :
 | Offset | Taille | Description                  |
 | ------ | ------ | ---------------------------- |
 | 0x00 | 4 | Identifiant "RDT " |
-| 0x04 | 4 | Taille des données (uint32 LE) |
+| 0x04 | 4 | Taille du chunk moins 8 octets (uint32 LE) |
 | 0x08   | N      | Contenu brut de la ROM       |
 
 ---
