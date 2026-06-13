@@ -40,7 +40,7 @@ CRO files: *Form Type* = `"CRO "`.
 | Field       | Size | Description                     |
 | ----------- | ---- | --------------------------------|
 | Chunk ID    | 4    | ASCII identifier                |
-| Chunk Size  | 4    | Total file size minus 8 bytes (uint32 LE)           |
+| Chunk Size  | 4    | Total chunk size minus 8 bytes (uint32 LE)           |
 | Chunk Data  | N    | Payload                          |
 | Padding     | 0 or 1 | Align to even size              |
 
@@ -84,7 +84,7 @@ RIFF
 | Offset | Size | Description                      |
 | ------ | ---- | -------------------------------- |
 | 0x00   | 4    | `"GRRO"`                         |
-| 0x04   | 4    | Total file size minus 8 bytes (uint32 LE)           |
+| 0x04   | 4    | Total chunk size minus 8 bytes (uint32 LE)           |
 | 0x08   | N    | Sub-chunks: GNUM + GLBL + GMSK+ ROMs  |
 
 ---
@@ -105,7 +105,7 @@ RIFF
 | Offset | Size | Description |
 |------|------|------------|
 | 0x00   | 4    | `"GNUM"`                         |
-| 0x04   | 4    | Total file size minus 8 bytes (uint32 LE)           |
+| 0x04   | 4    | Total chunk size minus 8 bytes (uint32 LE)           |
 | 0x08 | 4 | Unique number of group (uint32 LE, start at 0) |
 
 ---
@@ -114,7 +114,7 @@ RIFF
 | Offset | Size | Description |
 |------|------|------------|
 | 0x00   | 4    | `"GLBL"`                         |
-| 0x04   | 4    | Total file size minus 8 bytes (uint32 LE)           |
+| 0x04   | 4    | Total chunk size minus 8 bytes (uint32 LE)           |
 | 0x08 | N | Description ASCII String |
 
 ---
@@ -139,7 +139,7 @@ This allows emulation of EEPROMs smaller than the available address space
 | Offset | Size | Description                      |
 | ------ | ---- | -------------------------------- |
 | 0x00   | 4    | `"ROM "`                         |
-| 0x04   | 4    | Total file size minus 8 bytes (uint32 LE)           |
+| 0x04   | 4    | Total chunk size minus 8 bytes (uint32 LE)           |
 | 0x08   | N    | Sub-chunks: RID + RTYP + RLOG+ RPHY + RDT  |
 
 ---
@@ -161,7 +161,7 @@ This allows emulation of EEPROMs smaller than the available address space
 | Offset | Size | Description         |
 | ------ | ---- | ----------------- |
 | 0x00   | 4    | `"RID "`                         |
-| 0x04   | 4    | Total file size minus 8 bytes (uint32 LE)           |
+| 0x04   | 4    | Total chunk size minus 8 bytes (uint32 LE)           |
 | 0x08   | N    | ASCII string       |
 
 ---
@@ -170,7 +170,7 @@ This allows emulation of EEPROMs smaller than the available address space
 | Offset | Size | Description         |
 | ------ | ---- | ----------------- |
 | 0x00   | 4    | `"RTYP"`                         |
-| 0x04   | 4    | Total file size minus 8 bytes (uint32 LE)           |
+| 0x04   | 4    | Total chunk size minus 8 bytes (uint32 LE)           |
 | 0x08   | 4    | Logical type uint32 LE |
 
 Values:
@@ -185,7 +185,7 @@ Values:
 | Offset | Size | Description            |
 | ------ | ---- | ---------------------- |
 | 0x00   | 4    | `"RLOG"`                         |
-| 0x04   | 4    | Total file size minus 8 bytes (uint32 LE)           |
+| 0x04   | 4    | Total chunk size minus 8 bytes (uint32 LE)           |
 | 0x08   | 4    | Logical selection number (uint32 LE, 0–255) |
 ---
 ### 5.5 `RPHY`
@@ -193,7 +193,7 @@ Values:
 | Offset | Size | Description            |
 | ------ | ---- | ---------------------- |
 | 0x00   | 4    | `"RPHY"`                         |
-| 0x04   | 4    | Total file size minus 8 bytes (uint32 LE)           |
+| 0x04   | 4    | Total chunk size minus 8 bytes (uint32 LE)           |
 | 0x08   | 4    | Physical ROM number (uint32 LE) |
 ---
 ### 5.6 `RDT `
@@ -201,7 +201,7 @@ Values:
 | Offset | Size | Description           |
 | ------ | ---- | -------------------- |
 | 0x00   | 4    | `"RDT "`                         |
-| 0x04   | 4    | Total file size minus 8 bytes (uint32 LE)           |
+| 0x04   | 4    | Total chunk size minus 8 bytes (uint32 LE)           |
 | 0x08   | N    | ROM raw contents      |
 
 ---
